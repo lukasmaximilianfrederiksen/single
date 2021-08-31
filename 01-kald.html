@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      h1 {
+        text-align: center;
+      }
+      img {
+        max-width: 200px;
+        margin: auto;
+        display: block;
+      }
+
+      .personContainer {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      }
+      article {
+        border: solid black 1px;
+        margin-left: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      h2 {
+        text-align: center;
+      }
+      .personListe p {
+        text-align: center;
+      }
+
+      .selected {
+        background-color: rgb(68, 141, 68);
+      }
+      nav {
+        display: flex;
+        justify-content: center;
+      }
+
+      button {
+        margin: 0.5rem;
+      }
+      button:hover {
+        border: solid blue 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Alle</h1>
+      <nav>
+        <button data-troende="alle" class="valgt">Alle</button>
+        <button data-troende="ja" class="ja">Troende</button>
+        <button data-troende="nej" class="nej">Ikke troende</button>
+        <button data-troende="tvivler" class="tvivler">Tvivlende</button>
+      </nav>
+    </header>
+    <section class="personContainer"></section>
+    <template>
+      <article class="personListe">
+        <h2></h2>
+        <img src="" alt="" class="billedePerson" />
+        <p class="personNavn"></p>
+        <p class="personEfternavn"></p>
+        <p class="fødselsdag"></p>
+        <p class="titel"></p>
+        <p class="religion"></p>
+        <p class="hobby"></p>
+      </article>
+    </template>
+
+    <script>
+      const url = "https://persongalleri-5d3e.restdb.io/rest/persongalleri";
+      const header = document.querySelector("header h1");
+      const options = {
+        headers: {
+          "x-apikey": "600fe9211346a1524ff12e31",
+        },
+      };
+
+      document.addEventListener("DOMContentLoaded", start);
+      let personer;
+      let filter = "alle";
+
+      function start() {
+        const filterKnapper = document.querySelectorAll("nav button");
+        document.querySelector(".valgt").classList.add("selected");
+        filterKnapper.forEach((knap) =>
+          knap.addEventListener("click", filtrerPersoner)
+        );
+        hentData();
+      }
+
+      function filtrerPersoner() {
+        filter = this.dataset.troende;
+        document.querySelector(".selected").classList.remove("selected");
+        this.classList.add("selected");
+        visPersoner();
+        header.textContent = this.textContent;
+        console.log(this);
+      }
+
+      // Henter JSON filer
+      async function hentData() {
+        const respons = await fetch(url, options);
+        personer = await respons.json();
+        console.log("personer", personer);
+        visPersoner();
+      }
+
+      function visPersoner() {
+        const main = document.querySelector(".personContainer");
+        const minTemplate = document.querySelector("template").content;
+        main.textContent = "";
+        personer.forEach((person) => {
+          if (filter == person.troende || filter == "alle") {
+            const klon = minTemplate.cloneNode(true);
+            klon.querySelector("img").src = "./billeder-json/" + person.billede;
+            klon.querySelector("h2").textContent =
+              person.fornavn + " " + person.efternavn;
+
+            klon.querySelector(".religion").textContent =
+              "Troende: " + person.troende;
+            klon
+              .querySelector(".personListe")
+              .addEventListener("click", () => visDetaler(person));
+
+            main.appendChild(klon);
+          }
+        });
+
+        function visDetaler(hvem) {
+          location.href = `02-detalje.html?id=${hvem._id}`;
+        }
+      }
+
+      hentData();
+    </script>
+  </body>
+</html>

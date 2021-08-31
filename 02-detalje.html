@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      h1 {
+        text-align: center;
+      }
+      img {
+        max-width: 500px;
+        margin: auto;
+        display: block;
+      }
+
+      .personContainer {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      }
+      article {
+        border: solid black 1px;
+        margin-left: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      h2 {
+        text-align: center;
+      }
+      .personListe p {
+        text-align: center;
+      }
+
+      .selected {
+        background-color: rgb(68, 141, 68);
+      }
+      nav {
+        display: flex;
+        justify-content: center;
+      }
+
+      button {
+        margin: 0.5rem;
+      }
+      button:hover {
+        border: solid blue 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <button>Back</button>
+    </nav>
+    <article class="personListe">
+      <h2></h2>
+
+      <img src="" alt="" class="billedePerson" />
+      <p class="personNavn"></p>
+      <p class="personEfternavn"></p>
+      <p class="fødselsdag"></p>
+      <p class="titel"></p>
+      <p class="religion"></p>
+      <p class="hobby"></p>
+    </article>
+
+    <script>
+      const URLParams = new URLSearchParams(window.location.search);
+      const id = URLParams.get("id");
+      let persone;
+      console.log(id);
+      const url = "https://persongalleri-5d3e.restdb.io/rest/persongalleri/";
+      const header = document.querySelector("header h1");
+      const options = {
+        headers: {
+          "x-apikey": "600fe9211346a1524ff12e31",
+        },
+      };
+
+      document.addEventListener("DOMContentLoaded", hentData);
+
+      async function hentData() {
+        const respons = await fetch(
+          `https://persongalleri-5d3e.restdb.io/rest/persongalleri/${id}`,
+          options
+        );
+        person = await respons.json();
+        console.log(person);
+        visPerson(person);
+      }
+
+      function visPerson() {
+        document.querySelector("img").src = "./billeder-json/" + person.billede;
+        document.querySelector("h2").textContent =
+          person.fornavn + " " + person.efternavn;
+
+        document.querySelector(".religion").textContent =
+          "Troende: " + person.troende;
+        document.querySelector(".personListe");
+
+        document
+          .querySelector("button")
+          .addEventListener("click", tilbageTilForside);
+      }
+
+      function tilbageTilForside() {
+        history.back();
+      }
+    </script>
+  </body>
+</html>
